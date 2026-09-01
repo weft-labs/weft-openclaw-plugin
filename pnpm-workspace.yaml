@@ -1,0 +1,15 @@
+packages:
+  - "."
+
+onlyBuiltDependencies:
+  - esbuild
+
+ignoredBuiltDependencies:
+  - msgpackr-extract
+
+blockExoticSubdeps: true
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "@weft-labs/sdk"
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 525960

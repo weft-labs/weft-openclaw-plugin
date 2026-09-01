@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "weft",
+  "version": "0.1.0",
+  "description": "Find and buy paid data, APIs, and real-world actions through Weft",
+  "author": {
+    "name": "Weft Labs",
+    "url": "https://weft.network"
+  },
+  "homepage": "https://weft.network/docs",
+  "repository": "https://github.com/weft-labs/weft-openclaw-plugin",
+  "license": "MIT",
+  "keywords": ["weft", "agents", "paid-apis", "x402", "mpp"]
+}

@@ -1,0 +1,97 @@
+{
+  "name": "@weft-labs/openclaw-plugin",
+  "version": "0.1.0",
+  "description": "Find and buy paid data, APIs, and actions through Weft in OpenClaw",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": "./dist/index.js",
+  "files": [
+    "dist",
+    "src",
+    "agent-plugin",
+    "docs",
+    "SKILLS_REF",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "bundle:check": "node scripts/check-bundle.mjs",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run bundle:check && pnpm run openclaw:check && pnpm run package:check",
+    "dogfood": "node scripts/dogfood.mjs",
+    "dogfood:docker": "docker compose -f docker-compose.dogfood.yml run --build --rm dogfood",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "openclaw:check": "pnpm run build && node scripts/check-openclaw.mjs",
+    "package:check": "node scripts/check-package.mjs",
+    "prepack": "pnpm run build",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@weft-labs/sdk": "0.23.1",
+    "typebox": "1.3.17"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.8.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.7",
+    "@types/node": "^24.10.0",
+    "openclaw": "2026.8.1",
+    "tsup": "^8.5.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  },
+  "engines": {
+    "node": ">=24.15 <25"
+  },
+  "packageManager": "pnpm@10.33.4",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weft-labs/weft-openclaw-plugin.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "openclaw",
+    "weft",
+    "web-search",
+    "agent-plugin",
+    "mcp",
+    "paid-apis",
+    "x402"
+  ],
+  "openclaw": {
+    "extensions": [
+      "./src/index.ts"
+    ],
+    "runtimeExtensions": [
+      "./dist/index.js"
+    ],
+    "install": {
+      "npmSpec": "@weft-labs/openclaw-plugin",
+      "defaultChoice": "npm",
+      "minHostVersion": ">=2026.8.1",
+      "allowInvalidConfigRecovery": true
+    },
+    "compat": {
+      "pluginApi": ">=2026.8.1",
+      "minGatewayVersion": ">=2026.8.1"
+    },
+    "build": {
+      "openclawVersion": "2026.8.1",
+      "pluginSdkVersion": "2026.8.1"
+    },
+    "release": {
+      "publishToClawHub": true,
+      "publishToNpm": true
+    }
+  }
+}
