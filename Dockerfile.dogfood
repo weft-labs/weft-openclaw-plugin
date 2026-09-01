@@ -7,7 +7,10 @@ WORKDIR /plugin
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
-COPY . .
+COPY README.md LICENSE SKILLS_REF openclaw.plugin.json tsconfig.json ./
+COPY agent-plugin ./agent-plugin
+COPY scripts/check-openclaw.mjs scripts/dogfood.mjs ./scripts/
+COPY src ./src
 RUN pnpm run build
 
 ENV OPENCLAW_STATE_DIR=/tmp/openclaw-dogfood
