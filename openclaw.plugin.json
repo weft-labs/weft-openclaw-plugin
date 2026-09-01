@@ -1,0 +1,66 @@
+{
+  "id": "weft",
+  "name": "Weft",
+  "description": "Search the web through Weft without separate provider API keys.",
+  "activation": {
+    "onStartup": true
+  },
+  "setup": {
+    "providers": [
+      {
+        "id": "weft",
+        "authMethods": ["api-key"],
+        "envVars": ["WEFT_API_KEY"]
+      }
+    ]
+  },
+  "uiHints": {
+    "webSearch.apiKey": {
+      "label": "Weft API key",
+      "help": "Weft buyer key. Fallback: WEFT_API_KEY in the Gateway environment.",
+      "sensitive": true,
+      "placeholder": "wk_..."
+    },
+    "webSearch.provider": {
+      "label": "Upstream provider",
+      "help": "Use auto for the lowest-price compatible operation, or pin one provider."
+    },
+    "webSearch.maxCostUsd": {
+      "label": "Maximum cost per search",
+      "help": "Hard USD ceiling for one paid search. Default: 0.01."
+    },
+    "webSearch.baseUrl": {
+      "label": "Weft API base URL",
+      "help": "Optional Weft API URL. Public URLs must use HTTPS."
+    }
+  },
+  "contracts": {
+    "webSearchProviders": ["weft"]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "webSearch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "apiKey": {
+            "type": ["string", "object"]
+          },
+          "provider": {
+            "type": "string",
+            "enum": ["auto", "youcom", "exa", "parallel", "tavily"]
+          },
+          "maxCostUsd": {
+            "type": "string",
+            "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,6})?$"
+          },
+          "baseUrl": {
+            "type": ["string", "object"]
+          }
+        }
+      }
+    }
+  }
+}
