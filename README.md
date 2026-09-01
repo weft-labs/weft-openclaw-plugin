@@ -123,3 +123,31 @@ mise exec -- pnpm openclaw:check
 ```
 
 Tests use local fixtures. They do not make paid calls.
+
+## Docker dogfood
+
+The Docker lane is staging-only. It refuses every other Weft base URL. Use a
+short-lived staging buyer key and revoke it after the run:
+
+```sh
+WEFT_API_KEY="your short-lived staging key" \
+  mise exec -- pnpm run dogfood:docker
+```
+
+The container:
+
+1. Builds the plugin with Node.js 24.
+2. Installs it into an isolated OpenClaw state directory.
+3. Confirms that OpenClaw loads native provider `weft` without diagnostics.
+4. Attempts one search with a hard `$0.01` ceiling.
+5. Prints host metadata and either normalized result URLs or a structured safe
+   refusal. It never prints the buyer key.
+
+The root filesystem stays read-only. Temporary OpenClaw state and its private
+SQLite worker cache use in-memory filesystems and disappear after the run.
+
+Staging buyers use Base Sepolia. If an upstream provider advertises only a Base
+mainnet challenge, Weft must stop before signing. The lane reports
+`safe_blocked` with both network names. This proves the provider path and safety
+gate, but it is not a successful paid search. A successful result needs a
+reviewed provider operation with a testnet payment challenge.

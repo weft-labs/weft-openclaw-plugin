@@ -1,0 +1,18 @@
+services:
+  dogfood:
+    build:
+      context: .
+      dockerfile: Dockerfile.dogfood
+    environment:
+      WEFT_API_KEY: ${WEFT_API_KEY:?Set a short-lived staging Weft buyer key}
+      WEFT_BASE_URL: https://staging.weft.network
+      WEFT_DOGFOOD_QUERY: ${WEFT_DOGFOOD_QUERY:-OpenClaw 2.0 plugin SDK web search provider}
+      WEFT_WEBSEARCH_MAX_COST_USD: "0.01"
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777
+      - /home/node/.cache:uid=1000,gid=1000,mode=0700
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

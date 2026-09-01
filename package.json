@@ -16,6 +16,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run openclaw:check && pnpm run package:check",
+    "dogfood": "node scripts/dogfood.mjs",
+    "dogfood:docker": "docker compose -f docker-compose.dogfood.yml run --build --rm dogfood",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "lint": "biome lint .",
