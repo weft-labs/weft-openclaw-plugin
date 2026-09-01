@@ -1,9 +1,20 @@
 {
   "id": "weft",
   "name": "Weft",
-  "description": "Search the web through Weft without separate provider API keys.",
+  "description": "Find and buy paid data, APIs, and actions through Weft, with optional native web search.",
   "activation": {
     "onStartup": true
+  },
+  "skills": ["agent-plugin/skills"],
+  "mcpServers": {
+    "weft": {
+      "transport": "streamable-http",
+      "url": "https://weft.network/mcp",
+      "auth": "oauth",
+      "toolFilter": {
+        "include": ["weft_search", "weft_fetch", "weft_balance", "weft_connection_status"]
+      }
+    }
   },
   "setup": {
     "providers": [
@@ -15,23 +26,31 @@
     ]
   },
   "uiHints": {
+    "identity.baseUrl": {
+      "label": "Requester-scoped Weft MCP URL",
+      "help": "Optional MCP URL used only when requester bindings are configured. Public URLs must use HTTPS."
+    },
+    "identity.bindings": {
+      "label": "Requester credential bindings",
+      "help": "Map trusted OpenClaw requester identities to Gateway environment-variable names."
+    },
     "webSearch.apiKey": {
-      "label": "Weft API key",
-      "help": "Weft buyer key. Fallback: WEFT_API_KEY in the Gateway environment.",
+      "label": "Optional web-search Weft key",
+      "help": "Used only when Weft is explicitly selected as OpenClaw's native web-search provider.",
       "sensitive": true,
       "placeholder": "wk_..."
     },
     "webSearch.provider": {
-      "label": "Upstream provider",
-      "help": "Use auto for the lowest-price compatible operation, or pin one provider."
+      "label": "Web-search upstream provider",
+      "help": "Use auto for the lowest-price compatible search operation, or pin one provider."
     },
     "webSearch.maxCostUsd": {
-      "label": "Maximum cost per search",
-      "help": "Hard USD ceiling for one paid search. Default: 0.01."
+      "label": "Maximum cost per native web search",
+      "help": "Hard USD ceiling for one optional paid web search. Default: 0.01."
     },
     "webSearch.baseUrl": {
-      "label": "Weft API base URL",
-      "help": "Optional Weft API URL. Public URLs must use HTTPS."
+      "label": "Optional web-search Weft API URL",
+      "help": "Used only by the native web-search adapter. Public URLs must use HTTPS."
     }
   },
   "contracts": {
@@ -41,6 +60,42 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+      "identity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "bindings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["requesterSenderId", "messageChannel", "credentialEnv"],
+              "properties": {
+                "requesterSenderId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "messageChannel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "agentAccountId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "credentialEnv": {
+                  "type": "string",
+                  "pattern": "^[A-Z_][A-Z0-9_]*$"
+                }
+              }
+            }
+          }
+        }
+      },
       "webSearch": {
         "type": "object",
         "additionalProperties": false,

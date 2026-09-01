@@ -2,6 +2,7 @@ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { Type } from "typebox";
 
 import { readConfig, record } from "./config.js";
+import { createMcpConnectionResolver, readIdentityConfig } from "./identity.js";
 import { createSearchExecutor } from "./runtime.js";
 import { createSdkGateway } from "./sdk.js";
 
@@ -80,8 +81,15 @@ function mergedSearchConfig(
 export default definePluginEntry({
   id: "weft",
   name: "Weft",
-  description: "Search the web through Weft without separate provider API keys.",
+  description: "Find and buy paid data, APIs, and actions through Weft.",
   register(api) {
+    const identity = readIdentityConfig(api.pluginConfig);
+    if (identity.bindings.length > 0) {
+      api.registerMcpServerConnectionResolver(
+        createMcpConnectionResolver(identity, process.env, (message) => api.logger?.warn(message)),
+      );
+    }
+
     api.registerWebSearchProvider({
       id: "weft",
       label: "Weft",
@@ -118,6 +126,7 @@ export default definePluginEntry({
 
 export { extractOperations, selectOperation } from "./catalog.js";
 export { readConfig } from "./config.js";
+export { createMcpConnectionResolver, readIdentityConfig } from "./identity.js";
 export { normalizeResults } from "./normalize.js";
 export { buildFetchRequest } from "./request.js";
 export { assertSpendAvailable, createSearchExecutor } from "./runtime.js";

@@ -1,47 +1,147 @@
-# Weft web search for OpenClaw 2.0
+# Weft for OpenClaw 2.0
 
-Use Weft as a native OpenClaw web-search provider. OpenClaw can search through
-You.com, Exa, Parallel, or Tavily with one Weft buyer key. You do not need a
-separate key for each search provider.
+Find and buy paid data, APIs, agent services, and real-world actions from an
+OpenClaw conversation.
 
-This plugin removes separate provider-key setup. It does not make search
-unlimited. Your Weft balance, wallet policy, per-search ceiling, and provider
-capacity still apply.
+Weft is not only web search. The default workflow is:
+
+```text
+search the service marketplace -> choose a contract -> check the wallet
+-> pay and execute -> present the result and receipt
+```
+
+The plugin also includes an optional native web-search adapter for operators
+who want OpenClaw's built-in `web_search` tool to buy a reviewed search
+provider through Weft.
+
+## What installs
+
+| Layer | Default | Purpose |
+| --- | --- | --- |
+| Canonical `weft` skill | Yes | Teaches the agent service selection, payment, receipt, and safety loop. |
+| Hosted Weft MCP | Yes | Supplies generic discovery, wallet, execution, and connection tools. |
+| Requester identity resolver | When configured | Gives different trusted OpenClaw requesters different Weft credentials. |
+| Native web-search adapter | When selected | Routes OpenClaw `web_search` through one Weft-bought search operation. |
+
+OpenClaw prefixes MCP tools with their server name. The Weft tools appear as:
+
+- `weft__weft_search`
+- `weft__weft_fetch`
+- `weft__weft_balance`
+- `weft__weft_connection_status`
 
 ## Requirements
 
 - OpenClaw `2026.8.1` or later
-- Node.js 24.15 or later
-- A Weft account with a buyer key and funded balance
+- Node.js 24.15 or later for the full native package
+- a Weft account; paid calls also need a funded wallet
 
-## Install
+## Install the complete OpenClaw plugin
 
-After the first npm release, install the package:
+After the first npm release:
 
 ```sh
 openclaw plugins install npm:@weft-labs/openclaw-plugin
+openclaw gateway restart
 ```
 
-For a source checkout, install a linked development copy:
+For a source checkout:
 
 ```sh
 openclaw plugins install --link .
+openclaw gateway restart
 ```
 
-Set the buyer key in the environment that starts the OpenClaw Gateway:
+Check the installation:
 
 ```sh
-export WEFT_API_KEY="your Weft buyer key"
+openclaw plugins inspect weft
+openclaw mcp status --verbose
 ```
 
-Do not commit the key to a file. You can also store the key through OpenClaw's
-web setup flow:
+## Single-user setup
+
+The default MCP connection uses OpenClaw's OAuth store. It does not need a key
+in this package. Save the server in OpenClaw before login because the MCP
+commands read the local server list:
 
 ```sh
-openclaw configure --section web
+openclaw mcp set weft '{"url":"https://weft.network/mcp","transport":"streamable-http","auth":"oauth","toolFilter":{"include":["weft_search","weft_fetch","weft_balance","weft_connection_status"]}}'
+openclaw mcp login weft
+openclaw mcp probe weft
 ```
 
-Then select Weft in `openclaw.json`:
+Complete the browser sign-in, then start a new OpenClaw session. Ask for a
+service, not only a web page. Examples:
+
+- “Find an API that verifies this email address. Show the price before use.”
+- “Find a company-data service and enrich these five domains.”
+- “Find a service that can send this SMS. Do not execute until I confirm.”
+
+The canonical skill requires a balance check before the first paid fetch, a
+tight price ceiling, and no automatic retry of an uncertain paid call.
+
+## Portable bundle only
+
+Install the content-only Agent Plugins 1.0.0 bundle when native code is not
+allowed:
+
+```sh
+openclaw plugins install ./agent-plugin
+openclaw gateway restart
+openclaw mcp set weft '{"url":"https://weft.network/mcp","transport":"streamable-http","auth":"oauth","toolFilter":{"include":["weft_search","weft_fetch","weft_balance","weft_connection_status"]}}'
+openclaw mcp login weft
+openclaw mcp probe weft
+```
+
+This loads the same canonical skill and hosted MCP server. It does not load the
+requester resolver or the native web-search adapter. The portable Agent
+Plugins format does not carry an OAuth mode, so the explicit `mcp set` step
+adds OpenClaw's local authentication policy before login. The native manifest
+also declares that policy for agent-side discovery, but its login command still
+uses the saved local server entry.
+
+## Multi-user requester identity
+
+For a gateway shared by several message senders, keep each credential in a
+Gateway environment variable and bind it to OpenClaw's trusted requester
+identity:
+
+```json5
+{
+  plugins: {
+    entries: {
+      weft: {
+        enabled: true,
+        config: {
+          identity: {
+            bindings: [
+              {
+                requesterSenderId: "123456",
+                messageChannel: "telegram",
+                agentAccountId: "main-bot",
+                credentialEnv: "WEFT_PATRICK_API_KEY",
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+Set `WEFT_PATRICK_API_KEY` only in the environment that starts the Gateway.
+Do not put a credential in the binding object.
+
+Requester mode is fail-closed. An unmatched sender gets no Weft MCP connection.
+A missing environment variable names the required variable but never prints a
+credential. Runs without a trusted sender identity, such as cron and subagent
+runs, do not receive requester-scoped Weft tools.
+
+## Optional native web search
+
+Set Weft as OpenClaw's web-search provider only when you want this shortcut:
 
 ```json5
 {
@@ -57,97 +157,44 @@ Then select Weft in `openclaw.json`:
       },
     },
   },
-  plugins: {
-    entries: {
-      weft: {
-        enabled: true,
-      },
-    },
-  },
 }
 ```
 
-Restart the Gateway after you change its environment or plugin configuration.
-Run `openclaw plugins list` to confirm that the plugin is loaded.
+Set `WEFT_API_KEY` in the Gateway environment or use OpenClaw's web-provider
+setup flow. This credential is only for the optional adapter; generic MCP OAuth
+is independent.
 
-## Provider modes
-
-| Value | Behavior |
-| --- | --- |
-| `auto` | Select the lowest-price compatible operation within the ceiling. |
-| `youcom` | Use only the reviewed You.com search operation. |
-| `exa` | Use only the reviewed Exa search operation. |
-| `parallel` | Use only the reviewed Parallel search operation. |
-| `tavily` | Use only the reviewed Tavily search operation. |
-
-For equal prices, `auto` uses the catalog score. A fixed mode does not silently
-change the provider.
-
-## Configuration
-
-The provider scope takes precedence over the equivalent environment variable.
-
-| Provider setting | Environment variable | Default |
-| --- | --- | --- |
-| `provider` | `WEFT_WEBSEARCH_PROVIDER` | `auto` |
-| `maxCostUsd` | `WEFT_WEBSEARCH_MAX_COST_USD` | `0.01` |
-| `baseUrl` | `WEFT_BASE_URL` | Weft SDK default |
-
-`maxCostUsd` is a hard limit for one search. The live payment challenge is
-authoritative. Weft refuses a request when its price exceeds this limit or the
-wallet policy.
-
-## Paid-call safety
-
-For each OpenClaw search, the plugin:
-
-1. Reads the current Weft balance and policy.
-2. Runs a free Weft catalog search.
-3. Selects one reviewed synchronous search operation.
-4. Sends one paid Weft fetch with exact catalog attribution.
-5. Converts the provider response to OpenClaw web-search rows.
-
-The plugin does not retry an uncertain paid request. If cancellation or a
-network error races with payment, inspect Weft purchase history before you run
-the query again.
-
-OpenClaw validates result URLs, limits external data, and wraps provider text as
-untrusted content before it reaches the model.
+Provider modes are `auto`, `youcom`, `exa`, `parallel`, and `tavily`. `auto`
+uses the lowest-price compatible reviewed operation and uses catalog score only
+to break equal-price ties. The adapter sends one paid request with a hard cost
+ceiling and never retries an uncertain outcome.
 
 ## Development
 
 ```sh
 mise exec -- pnpm install --frozen-lockfile
 mise exec -- pnpm check
-mise exec -- pnpm openclaw:check
 ```
 
-Tests use local fixtures. They do not make paid calls.
+The `weft` skill is a byte-identical mirror of `weft-labs/skills` at the commit
+in `SKILLS_REF`. Change it only in the canonical skills repository, then bump
+the pin and re-vendor it here.
 
 ## Docker dogfood
 
-The Docker lane is staging-only. It refuses every other Weft base URL. Use a
-short-lived staging buyer key and revoke it after the run:
+The Docker lane is staging-only. It installs both plugin formats, checks the
+generic MCP catalog and requester resolver, then exercises the optional native
+web-search adapter with a strict `$0.01` ceiling:
 
 ```sh
-WEFT_API_KEY="your short-lived staging key" \
+WEFT_API_KEY="a short-lived staging buyer key" \
   mise exec -- pnpm run dogfood:docker
 ```
 
-The container:
+The container root filesystem is read-only. OpenClaw state, MCP credentials,
+and caches live in temporary memory filesystems and disappear after the run.
+The lane never prints the buyer key.
 
-1. Builds the plugin with Node.js 24.
-2. Installs it into an isolated OpenClaw state directory.
-3. Confirms that OpenClaw loads native provider `weft` without diagnostics.
-4. Attempts one search with a hard `$0.01` ceiling.
-5. Prints host metadata and either normalized result URLs or a structured safe
-   refusal. It never prints the buyer key.
-
-The root filesystem stays read-only. Temporary OpenClaw state and its private
-SQLite worker cache use in-memory filesystems and disappear after the run.
-
-Staging buyers use Base Sepolia. If an upstream provider advertises only a Base
-mainnet challenge, Weft must stop before signing. The lane reports
-`safe_blocked` with both network names. This proves the provider path and safety
-gate, but it is not a successful paid search. A successful result needs a
-reviewed provider operation with a testnet payment challenge.
+Staging uses Base Sepolia. A provider that advertises only a Base mainnet
+challenge must be refused before signing. That safe refusal proves the control
+path but is not a successful paid search.

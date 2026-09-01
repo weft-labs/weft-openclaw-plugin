@@ -2,14 +2,17 @@
 
 ## Purpose
 
-First-party OpenClaw 2.0 web-search provider for Weft. It discovers a current
-provider operation, buys it through Weft, and returns conforming OpenClaw rows.
+First-party generic Weft integration for OpenClaw 2.0. The canonical skill and
+hosted MCP server provide discovery, wallet checks, paid execution, actions,
+and receipts. Native code adds requester-scoped identity and an optional
+web-search adapter.
 
 ## Stack
 
+- Agent Plugins 1.0.0 bundle
 - TypeScript ESM, Node 24, pnpm 10
 - OpenClaw native plugin SDK `2026.8.1`
-- `@weft-labs/sdk` buyer client
+- `@weft-labs/sdk` only for the optional web-search adapter
 - Vitest, Biome, tsup
 
 ## Commands
@@ -17,18 +20,22 @@ provider operation, buys it through Weft, and returns conforming OpenClaw rows.
 ```sh
 mise exec -- pnpm install --frozen-lockfile
 mise exec -- pnpm check
-mise exec -- pnpm openclaw:validate
+mise exec -- pnpm run dogfood:docker
 ```
 
 ## Constraints
 
+- The generic path is skill plus hosted MCP. Do not copy the buyer runtime into
+  native code.
+- `agent-plugin/skills/weft/` is a byte-identical mirror of
+  `weft-labs/skills` at `SKILLS_REF`. Never edit it directly.
 - Use OpenClaw's public plugin API. Do not patch OpenClaw core.
-- Never accept or forward provider API keys.
-- Every paid fetch has a strict `maxCostUsd` and exact Weft attribution.
-- Check balance and policy before each paid fetch.
-- Never retry an uncertain paid fetch.
-- Pass OpenClaw cancellation to every Weft network call.
-- Accept only reviewed You.com, Exa, Parallel, and Tavily operation ids.
-- Return raw conforming rows. OpenClaw core owns untrusted-content wrapping.
+- Requester identity uses only host-trusted fields and environment-variable
+  names. Never store, log, or return credential values.
+- Requester mode has no shared fallback and does not invent identity for cron or
+  subagent runs.
+- Web search is optional. Keep its strict ceiling, exact attribution, reviewed
+  operation allowlist, cancellation, and no-paid-retry controls.
+- Provider credentials never enter this plugin.
 - Keep secrets out of source, tests, fixtures, logs, and plugin output.
 - Patrick owns merge, npm publication, and ClawHub publication.

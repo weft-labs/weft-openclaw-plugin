@@ -19,6 +19,6 @@
     }
   },
   "files": {
-    "includes": ["**", "!dist", "!node_modules", "!.tmp"]
+    "includes": ["**", "!dist", "!node_modules", "!.tmp", "!agent-plugin/skills"]
   }
 }

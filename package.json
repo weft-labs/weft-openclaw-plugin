@@ -1,7 +1,7 @@
 {
   "name": "@weft-labs/openclaw-plugin",
   "version": "0.1.0",
-  "description": "OpenClaw web search powered by Weft",
+  "description": "Find and buy paid data, APIs, and actions through Weft in OpenClaw",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -9,13 +9,17 @@
   "files": [
     "dist",
     "src",
+    "agent-plugin",
+    "docs",
+    "SKILLS_REF",
     "openclaw.plugin.json",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
-    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run openclaw:check && pnpm run package:check",
+    "bundle:check": "node scripts/check-bundle.mjs",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run bundle:check && pnpm run openclaw:check && pnpm run package:check",
     "dogfood": "node scripts/dogfood.mjs",
     "dogfood:docker": "docker compose -f docker-compose.dogfood.yml run --build --rm dogfood",
     "format": "biome format --write .",
@@ -59,6 +63,9 @@
     "openclaw",
     "weft",
     "web-search",
+    "agent-plugin",
+    "mcp",
+    "paid-apis",
     "x402"
   ],
   "openclaw": {

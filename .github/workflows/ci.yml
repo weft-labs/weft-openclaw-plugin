@@ -48,6 +48,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
+      - name: Check skill drift against weft-labs/skills
+        run: |
+          ref=$(cat SKILLS_REF)
+          git clone https://github.com/weft-labs/skills "$RUNNER_TEMP/canonical-skills"
+          git -C "$RUNNER_TEMP/canonical-skills" -c advice.detachedHead=false checkout "$ref"
+          diff -r "$RUNNER_TEMP/canonical-skills/skills/weft" agent-plugin/skills/weft
+      - run: pnpm run bundle:check
       - run: pnpm run openclaw:check
       - run: pnpm run package:check
 

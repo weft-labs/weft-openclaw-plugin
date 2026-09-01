@@ -6,7 +6,7 @@ services:
     environment:
       WEFT_API_KEY: ${WEFT_API_KEY:?Set a short-lived staging Weft buyer key}
       WEFT_BASE_URL: https://staging.weft.network
-      WEFT_DOGFOOD_QUERY: ${WEFT_DOGFOOD_QUERY:-OpenClaw 2.0 plugin SDK web search provider}
+      WEFT_DOGFOOD_QUERY: ${WEFT_DOGFOOD_QUERY:-OpenClaw generic agent service marketplace}
       WEFT_WEBSEARCH_MAX_COST_USD: "0.01"
     read_only: true
     tmpfs:
