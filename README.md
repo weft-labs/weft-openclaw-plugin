@@ -176,7 +176,7 @@ mise exec -- pnpm install --frozen-lockfile
 mise exec -- pnpm check
 ```
 
-The `weft` skill is a byte-identical mirror of `weft-labs/skills` at the commit
+The `weft` skill is a byte-identical mirror of `weftlabs/skills` at the commit
 in `SKILLS_REF`. Change it only in the canonical skills repository, then bump
 the pin and re-vendor it here.
 

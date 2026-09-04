@@ -38,7 +38,7 @@ if (!skill.startsWith("---\nname: weft\n")) {
   throw new Error("Agent Plugin is missing the canonical Weft skill");
 }
 if (!/^[0-9a-f]{40}$/.test(skillsRef)) {
-  throw new Error("SKILLS_REF must pin one canonical weft-labs/skills commit");
+  throw new Error("SKILLS_REF must pin one canonical weftlabs/skills commit");
 }
 const oauthSetup = readme.indexOf('"auth":"oauth"');
 const oauthLogin = readme.indexOf("openclaw mcp login weft");

@@ -8,7 +8,7 @@
     "url": "https://weft.network"
   },
   "homepage": "https://weft.network/docs",
-  "repository": "https://github.com/weft-labs/weft-openclaw-plugin",
+  "repository": "https://github.com/weftlabs/weft-openclaw-plugin",
   "license": "MIT",
   "keywords": ["weft", "agents", "paid-apis", "x402", "mpp"]
 }

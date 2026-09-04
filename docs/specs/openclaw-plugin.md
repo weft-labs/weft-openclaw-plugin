@@ -33,7 +33,7 @@ requester identity and web-search provider registration.
 ## Contracts in
 
 - Agent Plugins 1.0.0 manifest and MCP schemas
-- canonical `weft-labs/skills/skills/weft` at `SKILLS_REF`
+- canonical `weftlabs/skills/skills/weft` at `SKILLS_REF`
 - hosted Weft MCP at `https://weft.network/mcp`
 - OpenClaw `2026.8.1` native manifest, skill, MCP, requester resolver, and
   web-search provider APIs
