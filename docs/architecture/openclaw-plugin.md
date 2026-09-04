@@ -23,7 +23,7 @@ The repository ships three layers. Each layer has one owner.
 `agent-plugin/` is a conforming Agent Plugins 1.0.0 bundle. It contains:
 
 - the canonical `weft` skill, vendored byte-identical from
-  `weft-labs/skills` at `SKILLS_REF`;
+  `weftlabs/skills` at `SKILLS_REF`;
 - one Streamable HTTP MCP connection to `https://weft.network/mcp`.
 
 The hosted MCP server owns account OAuth, the four generic Weft tools, wallet
@@ -108,7 +108,7 @@ The optional web-search adapter keeps its additional controls:
 ## Distribution
 
 The public package is `@weft-labs/openclaw-plugin` in
-`weft-labs/weft-openclaw-plugin`.
+`weftlabs/weft-openclaw-plugin`.
 
 - Install the repository root for all three layers.
 - Install `agent-plugin/` when only the portable skill and MCP bundle are
