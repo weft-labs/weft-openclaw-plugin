@@ -33,8 +33,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@weft-labs/sdk": "0.23.1",
-    "typebox": "1.3.17"
+    "@weft-labs/sdk": "0.25.0",
+    "typebox": "1.3.27"
   },
   "peerDependencies": {
     "openclaw": ">=2026.8.1"
