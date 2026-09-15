@@ -40,9 +40,9 @@
     "openclaw": ">=2026.8.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.7",
-    "@types/node": "^24.10.0",
-    "openclaw": "2026.8.1",
+    "@biomejs/biome": "2.5.13",
+    "@types/node": "^24.13.4",
+    "openclaw": "2026.9.4",
     "tsup": "^8.5.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8"
